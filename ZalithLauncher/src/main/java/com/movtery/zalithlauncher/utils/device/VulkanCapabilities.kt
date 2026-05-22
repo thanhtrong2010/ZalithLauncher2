@@ -82,6 +82,7 @@ fun interface VulkanLogCallback {
     fun log(level: String, message: String)
 }
 
+@Keep
 object VulkanChecker {
     init {
         try {
@@ -137,9 +138,11 @@ object VulkanChecker {
         }
     }
 
+    @Keep
     @JvmStatic
     private external fun nativeSetLogCallback(callback: VulkanLogCallback)
 
+    @Keep
     @JvmStatic
     private external fun nativeCheckVulkan(
         driverPath: String?,
