@@ -242,13 +242,25 @@ fun LauncherSettingsScreen(
 
                         IntSliderSettingsCard(
                             modifier = Modifier.fillMaxWidth(),
-                            position = CardPosition.Bottom,
+                            position = CardPosition.Middle,
                             unit = AllSettings.videoBackgroundVolume,
                             title = stringResource(R.string.settings_launcher_background_video_volume_title),
                             summary = stringResource(R.string.settings_launcher_background_video_volume_summary),
                             valueRange = AllSettings.videoBackgroundVolume.floatRange,
                             suffix = "%",
                             enabled = backgroundViewModel.isValid && backgroundViewModel.isVideo,
+                            fineTuningControl = true
+                        )
+
+                        IntSliderSettingsCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            position = CardPosition.Bottom,
+                            unit = AllSettings.backgroundBlur,
+                            title = stringResource(R.string.settings_title_blur),
+                            summary = stringResource(R.string.settings_launcher_background_blur_summary),
+                            valueRange = AllSettings.backgroundBlur.floatRange,
+                            suffix = "Dp",
+                            enabled = backgroundViewModel.isValid,
                             fineTuningControl = true
                         )
                     }

@@ -388,6 +388,11 @@ object AllSettings : SettingsRegistry() {
     val videoBackgroundVolume = intSetting("videoBackgroundVolume", 0, 0..100)
 
     /**
+     * 启动器背景模糊效果
+     */
+    val backgroundBlur = intSetting("backgroundBlur", 0, 0..40)
+
+    /**
      * 启动器主页类型
      */
     val homePageType = enumSetting("homePageType", HomePageType.Blank)

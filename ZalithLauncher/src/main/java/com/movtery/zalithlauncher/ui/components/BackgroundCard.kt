@@ -106,7 +106,7 @@ fun CardTitleLayout(
     influencedByBackground: Boolean = true,
     alpha: Float = 0.5f,
     color: Color = influencedByBackgroundColor(
-        color = cardTitleColor(),
+        color = cardTitleColor(alpha),
         enabled = influencedByBackground
     ),
     contentColor: Color = onCardColor(),

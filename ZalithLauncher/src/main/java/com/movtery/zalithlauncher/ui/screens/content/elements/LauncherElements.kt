@@ -26,9 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.gif.GifDecoder
@@ -57,10 +61,15 @@ import com.movtery.zalithlauncher.utils.string.isBiggerTo
 import com.movtery.zalithlauncher.utils.string.isLowerTo
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
+import dev.chrisbanes.haze.HazeInputScale
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
+import dev.chrisbanes.haze.hazeEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.File
+import kotlin.math.sqrt
 
 @Parcelize
 sealed interface QuickPlay : Parcelable {
@@ -301,23 +310,59 @@ fun Background(
     modifier: Modifier = Modifier,
     allowVideo: Boolean = true
 ) {
+    val blurRadius = AllSettings.backgroundBlur.state
     when {
         viewModel.isVideo && allowVideo -> {
             VideoPlayer(
                 videoUri = Uri.fromFile(viewModel.backgroundFile),
-                modifier = modifier,
+                modifier = modifier.glass(blurRadius),
                 refreshTrigger = viewModel.refreshTrigger,
                 volume = AllSettings.videoBackgroundVolume.state / 100f
             )
         }
         viewModel.isImage -> {
             BackgroundImage(
-                modifier = modifier,
+                modifier = modifier.glass(blurRadius),
                 imageFile = viewModel.backgroundFile,
                 refreshTrigger = viewModel.refreshTrigger
             )
         }
     }
+}
+
+/**
+ * 背景模糊效果
+ */
+private fun Modifier.glass(
+    blur: Int,
+): Modifier {
+    if (blur <= 0) return this
+
+    val blurDp = blur.dp
+    val t = (blur / 80f).coerceIn(0f, 1f)
+
+    val inputScale = lerp(
+        start = 0.6f,
+        stop = 0.92f,
+        fraction = sqrt(t)
+    )
+    val whiteAlpha = lerp(
+        start = 0f,
+        stop = 0.25f,
+        fraction = sqrt(t)
+    )
+
+    return this
+        .hazeEffect {
+            this.inputScale = HazeInputScale.Fixed(inputScale)
+            blurEffect {
+                this.blurRadius = blurDp
+                this.noiseFactor = -1f
+                this.colorEffects = listOf(
+                    HazeColorEffect.tint(Color.White.copy(alpha = whiteAlpha), BlendMode.SrcOver),
+                )
+            }
+        }
 }
 
 @Composable
