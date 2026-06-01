@@ -71,7 +71,7 @@ class PathManager {
             DIR_RUNTIME_MOD = context.getDir("runtime_mod", 0)
 
             DIR_DATA_BASES = File(DIR_FILES_PRIVATE.parentFile, "databases")
-            DIR_GAME = File(DIR_FILES_PRIVATE, "games")
+            DIR_GAME = File("/sdcard/TrongLauncher_Minecraft/")
             DIR_ACCOUNT_SKIN = File(DIR_GAME, "account_skins")
             DIR_ACCOUNT_CAPE = File(DIR_GAME, "account_capes")
             DIR_MULTIRT = File(DIR_GAME, "runtimes")
