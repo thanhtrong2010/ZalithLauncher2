@@ -352,12 +352,8 @@ private fun ActionsLayout(
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = {
-                if (isOffline) {
-                    //非正版状态下，只允许创建微软账号
-                    actions.onIntent(AccountManageIntent.UpdateMicrosoftLoginOp(MicrosoftLoginOperation.Tip))
-                } else {
-                    actions.onIntent(AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.Login))
-                }
+                // Bỏ qua kiểm tra isOffline, ép mở menu chọn tất cả phương thức đăng nhập
+                actions.onIntent(AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.Login))
             }
         ) {
             MarqueeText(text = stringResource(R.string.account_add_new_account))
@@ -426,34 +422,23 @@ private fun MicrosoftLoginOperation(
     when (operation) {
         is MicrosoftLoginOperation.None -> {}
         is MicrosoftLoginOperation.Tip -> {
-            MicrosoftLoginTipDialog(
-                onDismissRequest = {
-                    actions.onIntent(
-                        AccountManageIntent.UpdateMicrosoftLoginOp(
-                            MicrosoftLoginOperation.None
-                        )
+            // Khi bấm vào, thay vì chạy Microsoft login, app sẽ tự động tắt hộp thoại Microsoft
+            // và kích hoạt luôn hộp thoại nhập tên tài khoản Offline (Local Login) tự do.
+            LaunchedEffect(operation) {
+                actions.onIntent(
+                    AccountManageIntent.UpdateMicrosoftLoginOp(
+                        MicrosoftLoginOperation.None
                     )
-                },
-                onConfirm = {
-                    actions.onIntent(
-                        AccountManageIntent.UpdateMicrosoftLoginOp(
-                            MicrosoftLoginOperation.None
-                        )
+                )
+                actions.onIntent(
+                    AccountManageIntent.UpdateLocalLoginOp(
+                        LocalLoginOperation.Edit
                     )
-                    actions.onIntent(
-                        AccountManageIntent.PerformMicrosoftLogin(
-                            toWeb = actions.navigateToWeb,
-                            backToMain = actions.backToMainScreen,
-                            checkIfInWebScreen = actions.checkIfInWebScreen
-                        )
-                    )
-                },
-                openLink = actions.openLink
-            )
+                )
+            }
         }
     }
 }
-
 /**
  * 离线账号登录相关逻辑处理
  */
